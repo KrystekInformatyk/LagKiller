@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LagKiller — Priority Tool</title>
+  <meta name="description" content="LagKiller Priority Tool optimizes process priority for popular games to reduce stutter and improve responsiveness." />
+  <meta name="author" content="Krystek Games & KG STUDIO" />
+  <link rel="icon" href="assets/app.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0f1217;--panel:#171b22;--panel-2:#1c222b;--text:#e7ecf3;--muted:#a6b0c3;
+      --brand:#58d27a;--brand-2:#3aa7ff;--danger:#d96060;--stroke:rgba(255,255,255,.08);
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,sans-serif;line-height:1.6}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+      .btn.discord {
+    background: #5865F2; /* fiolet Discorda */
+    border-color: transparent;
+    color: #fff;
+  }
+  .btn.discord:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+  }
+
+    /* --- Header --- */
+    .nav{position:sticky;top:0;z-index:50;background:rgba(15,18,23,.7);backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid var(--stroke)}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:20px}
+    .brand svg{width:28px;height:28px;filter:drop-shadow(0 6px 14px rgba(88,210,122,.2))}
+    .nav a.btn{margin-left:10px}
+
+    /* --- Buttons --- */
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:12px;font-weight:700;border:1px solid var(--stroke);background:var(--panel);transition:.25s;box-shadow:var(--shadow)}
+    .btn:hover{transform:translateY(-2px)}
+    .btn.primary{background:linear-gradient(135deg,var(--brand),#46b86b);border-color:transparent;color:#0a0d12}
+    .btn.ghost{background:transparent}
+    .btn.secondary{background:linear-gradient(135deg,var(--brand-2),#6ec4ff);border-color:transparent;color:#061019}
+    .btn.small{padding:8px 12px;border-radius:10px;font-weight:600}
+
+    /* --- Language dropdown --- */
+    .lang{position:relative;margin-left:16px}
+    .lang-toggle{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 10px;border-radius:10px;border:1px solid var(--stroke);
+      background:var(--panel);font-weight:700;cursor:pointer;line-height:1;box-shadow:var(--shadow)
+    }
+    .lang-toggle:hover{transform:translateY(-2px);transition:.25s}
+    .lang-flag{width:18px;height:12px;object-fit:cover;border-radius:2px;border:1px solid rgba(255,255,255,.15)}
+    /* białe kody języków */
+    .lang-code{font-size:12px;color:#fff;opacity:1}
+    .lang-caret{font-size:10px;opacity:.7}
+    .lang-menu{
+      position:absolute;right:0;top:calc(100% + 6px);
+      min-width:180px;background:var(--panel);border:1px solid var(--stroke);
+      border-radius:10px;box-shadow:var(--shadow);padding:6px;display:none;
+    }
+    .lang.open .lang-menu{display:block}
+    .lang-item{
+      display:flex;align-items:center;gap:10px;
+      padding:8px;border-radius:8px;cursor:pointer;font-size:14px;
+    }
+    .lang-item:hover{background:var(--panel-2)}
+    .lang-item .flag{width:18px;height:12px;object-fit:cover;border-radius:2px;border:1px solid rgba(255,255,255,.15)}
+    .lang-item .code{font-weight:800;font-size:12px;color:#fff;opacity:1}
+    .lang-item .name{color:var(--muted);font-size:12px}
+
+    /* --- Hero --- */
+    .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--stroke)}
+    .hero-bg{position:absolute;inset:0;background:
+      radial-gradient(1200px 500px at 20% -10%, rgba(88,210,122,.18), transparent 60%),
+      radial-gradient(900px 400px at 90% 0%, rgba(58,167,255,.16), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,.03), transparent 20%);}
+    .hero-stripes:before,.hero-stripes:after{
+      content:"";position:absolute;inset:-30% -10%;background:
+      repeating-linear-gradient(110deg, rgba(255,255,255,.03) 0 14px, transparent 14px 28px);
+      transform:skewY(-6deg);animation:slide 22s linear infinite;mix-blend-mode:overlay}
+    .hero-stripes:after{animation-duration:36s;opacity:.35}
+    @keyframes slide{from{background-position:0 0}to{background-position:1000px 0}}
+    .hero-inner{position:relative;padding:80px 0 56px}
+    .kicker{color:var(--brand);font-weight:800;letter-spacing:.14em;font-size:12px}
+    .title{font-size:56px;line-height:1.05;margin:.2em 0 .2em;font-weight:800}
+    .subtitle{color:var(--muted);max-width:900px}
+    .cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+
+    /* --- Sections --- */
+    section{padding:70px 0;border-bottom:1px solid var(--stroke)}
+    .grid{display:grid;gap:22px}
+    .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .card{background:var(--panel);border:1px solid var(--stroke);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+    .card h3{margin:0 0 8px}
+    .muted{color:var(--muted)}
+
+    /* steps */
+    .step{display:flex;gap:16px;align-items:flex-start}
+    .step .num{flex:0 0 36px;height:36px;border-radius:10px;background:var(--panel-2);display:flex;align-items:center;justify-content:center;font-weight:800;border:1px solid var(--stroke)}
+
+    /* --- Shots --- */
+    .shot{aspect-ratio:16/9;background:#0b0e13;border:1px dashed var(--stroke);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+    .shot.has-img{background:none;border:1px solid var(--stroke);padding:0}
+    .shot.has-img img{width:100%;height:100%;object-fit:cover;border-radius:12px;display:block}
+
+    /* --- FAQ --- */
+    .faq-item{border:1px solid var(--stroke);border-radius:12px;background:var(--panel);overflow:hidden}
+    .faq-q{padding:16px 18px;cursor:pointer;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+    .faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease;padding:0 18px}
+    .faq-item.open .faq-a{max-height:400px;padding:0 18px 16px}
+
+    /* --- Footer --- */
+    footer{padding:28px 0;color:var(--muted)}
+    .fineprint{font-size:12px;opacity:.7}
+
+    /* --- Responsive --- */
+    @media (max-width: 980px){
+      .title{font-size:40px}
+      .grid.cols-3{grid-template-columns:1fr}
+      .grid.cols-2{grid-template-columns:1fr}
+      .lang-menu{right:auto;left:0}
+    }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="#" aria-label="LagKiller" title="Krystek Games & KG STUDIO">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stop-color="#58D27A"/><stop offset="1" stop-color="#3AA7FF"/></linearGradient>
+          </defs>
+          <path d="M32 4l20 8v16c0 14-8.5 26-20 32C20.5 54 12 42 12 28V12l20-8z" fill="url(#g)" opacity=".95"/>
+          <path d="M37 14L25 34h9l-3 16 12-20h-9l3-16z" fill="#0f1217"/>
+        </svg> LagKiller
+      </a>
+      <nav style="display:flex;align-items:center;gap:12px">
+        <a class="btn ghost small" href="#features" data-i18n="nav.features">Features</a>
+        <a class="btn ghost small" href="#how" data-i18n="nav.how">How it works</a>
+        <a class="btn small" href="#download" data-i18n="nav.download">Download</a>
+
+        <!-- LANGUAGE DROPDOWN -->
+        <div class="lang" id="langDropdown" aria-label="Language selector">
+          <button class="lang-toggle" id="langToggle" aria-haspopup="listbox" aria-expanded="false">
+            <img id="currentFlag" class="lang-flag" src="assets/flags/us.png" alt="US">
+            <span id="currentCode" class="lang-code">US</span>
+            <span class="lang-caret">▾</span>
+          </button>
+          <div class="lang-menu" id="langMenu" role="listbox">
+            <div class="lang-item" data-lang="us" role="option" aria-selected="true">
+              <img class="flag" src="assets/flags/us.png" alt="English">
+              <span class="code">US</span> <span class="name">English</span>
+            </div>
+            <div class="lang-item" data-lang="pl" role="option" aria-selected="false">
+              <img class="flag" src="assets/flags/pl.png" alt="Polski">
+              <span class="code">PL</span> <span class="name">Polski</span>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg hero-stripes"></div>
+    <div class="container hero-inner">
+      <div class="kicker" data-i18n="hero.kicker">PRIORITY TOOL by Krystek Games</div>
+      <h1 class="title" data-i18n="hero.title">Smoother games with one click.</h1>
+      <p class="subtitle" data-i18n="hero.subtitle">
+        LagKiller optimizes <strong>CPU / I/O / GPU scheduling priorities</strong> for supported games using safe Windows registry keys. Reduce micro-stutter, keep frame-times stable, and focus resources where they matter.
+      </p>
+      <div class="cta">
+        <a id="downloadBtnTop" class="btn primary" href="https://github.com/KrystekInformatyk/LagKiller/releases" data-i18n="buttons.downloadWin">⬇ Download for Windows</a>
+        <a class="btn secondary" href="https://github.com/KrystekInformatyk/LagKiller" data-i18n="buttons.viewGithub">View on GitHub</a>
+        <a class="btn discord" href="https://discord.gg/u48tX724YD" data-i18n="buttons.joinDiscord">Join Discord</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="container">
+      <h2 style="margin:0 0 16px" data-i18n="features.title">Why LagKiller?</h2>
+      <p class="muted" style="margin:0 0 26px" data-i18n="features.lead">Built for players who want consistent responsiveness without tweaking the OS by hand.</p>
+      <div class="grid cols-3">
+        <div class="card">
+          <h3 data-i18n="features.card1.title">One-click presets</h3>
+          <p class="muted" data-i18n="features.card1.body">Toggle High/Medium priorities for CPU, I/O and GPU with clear, safe defaults per game.</p>
+        </div>
+        <div class="card">
+          <h3 data-i18n="features.card2.title">Per-game profiles</h3>
+          <p class="muted" data-i18n="features.card2.body">Choose your game and LagKiller writes the correct <code>Image File Execution Options → PerfOptions</code> values for that EXE.</p>
+        </div>
+        <div class="card">
+          <h3 data-i18n="features.card3.title">No snake oil</h3>
+          <p class="muted" data-i18n="features.card3.body">No services, no kernel hacks, no background miner vibes. Just documented Windows knobs, with easy rollback.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how">
+    <div class="container grid cols-2">
+      <div class="card">
+        <h3 data-i18n="how.title">How it works (under the hood)</h3>
+        <div class="step"><div class="num">1</div><div data-i18n="how.step1">Pick a game. LagKiller knows its executable name (e.g. <code>Cyberpunk2077.exe</code>).</div></div>
+        <div class="step"><div class="num">2</div><div data-i18n="how.step2">Choose presets (CPU / I/O / GPU). We map them to safe DWORD values.</div></div>
+        <div class="step"><div class="num">3</div><div data-i18n="how.step3">We write to <code>HKLM\...\Image File Execution Options\&lt;exe&gt;\PerfOptions</code> (requires admin). Remove with one click.</div></div>
+        <div class="step"><div class="num">4</div><div data-i18n="how.step4">Launch your game—Windows scheduler now favors it according to your choices.</div></div>
+      </div>
+      <div class="grid">
+        <div class="shot has-img">
+          <img src="assets/shots/ui-main.png" alt="LagKiller UI (main)" loading="lazy">
+        </div>
+        <div class="shot has-img">
+          <img src="assets/shots/ui-bg.jpg" alt="LagKiller UI with background" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SAFETY / TRUST -->
+  <section id="trust">
+    <div class="container grid cols-2">
+      <div class="card">
+        <h3 data-i18n="trust.card1.title">Signed installer</h3>
+        <p class="muted" data-i18n="trust.card1.body">We ship a digitally signed installer and binaries. SmartScreen reputation improves over time.</p>
+      </div>
+      <div class="card">
+        <h3 data-i18n="trust.card3.title">Easy rollback</h3>
+        <p class="muted" data-i18n="trust.card3.body">“Reset” removes the registry keys so everything returns to stock in seconds.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <section id="download">
+    <div class="container grid cols-2">
+      <div class="card">
+        <h3 data-i18n="download.title">Download LagKiller</h3>
+        <p class="muted" data-i18n="download.requirements">Windows 10/11 (x64). Admin rights required only when applying or removing priorities.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin:14px 0 8px">
+          <a id="downloadBtn" class="btn primary" href="https://github.com/KrystekInformatyk/LagKiller/releases" data-i18n="buttons.downloadWin">⬇ Download (Setup)</a>
+        </div>
+        <details style="margin-top:12px">
+          <summary data-i18n="download.verifyTitle"><strong>Verify the download (optional)</strong></summary>
+          <p class="muted" style="margin:10px 0" data-i18n="download.compare">Compare the SHA-256 hash:</p>
+          <code id="shaBox" style="user-select:all;display:block;background:var(--panel-2);border:1px solid var(--stroke);padding:10px;border-radius:10px" data-i18n="download.sha">SHA256: 0912614F2BBCDFD1D6612E7A9E04936A2B0829C8EF8D0605CF0F8FF0D43F2A5E
+</code>
+          <p class="muted" style="margin:10px 0" data-i18n="download.signature">The installer is signed with <em>KG STUDIO</em>. In the file properties → Digital Signatures you should see the valid signature.</p>
+        </details>
+      </div>
+      <div class="card">
+        <h3 data-i18n="games.title">Supported & popular games</h3>
+        <p class="muted" data-i18n="games.examples">Examples: The Last of Us Part I/II, Cyberpunk 2077, Horizon Zero Dawn/Forbidden West, God of War (2018/Ragnarök), Red Dead Redemption 2, Hogwarts Legacy, ELDEN RING, Spider-Man Remastered / Miles Morales / Spider-Man 2…</p>
+        <p class="muted" data-i18n="games.note">Backgrounds change per game for a nice ambient touch.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="container">
+      <h2 style="margin:0 0 16px" data-i18n="faq.title">FAQ</h2>
+      <div class="grid">
+        <div class="faq-item">
+          <div class="faq-q" data-i18n="faq.q1">Is this safe? <span>▾</span></div>
+          <div class="faq-a"><p class="muted" data-i18n="faq.a1">Yes. We only write <em>documented</em> registry keys for process scheduling priorities. No services, drivers, or kernel changes. You can remove the keys with a single click (“Reset”).</p></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" data-i18n="faq.q2">Do I always need admin rights? <span>▾</span></div>
+          <div class="faq-a"><p class="muted" data-i18n="faq.a2">Only to apply or remove settings (HKLM requires elevation). The app itself doesn’t run in the background.</p></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" data-i18n="faq.q3">Will this boost FPS? <span>▾</span></div>
+          <div class="faq-a"><p class="muted" data-i18n="faq.a3">It primarily improves <em>responsiveness and frame-time stability</em>. FPS gains are possible but not guaranteed—results vary per system and game.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container" style="display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center">
+      <div class="fineprint">
+        © <span id="year"></span> Krystek Games / KG STUDIO • LagKiller
+      </div>
+      <div class="fineprint">All trademarks are property of their respective owners.</div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <a class="btn ghost small" href="https://github.com/KrystekInformatyk/LagKiller/releases" data-i18n="buttons.github">GitHub</a>
+        <a class="btn ghost small" href="https://discord.gg/u48tX724YD" data-i18n="buttons.discord">Discord</a>
+        <a class="btn ghost small" href="#download" data-i18n="nav.download">Download</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Pełne tłumaczenia US/PL (US = angielski). Alias 'en' -> 'us' dla zgodności.
+    const translations = {
+      us: {
+        "nav.features": "Features",
+        "nav.how": "How it works",
+        "nav.download": "Download",
+
+        "hero.kicker": "PRIORITY TOOL by Krystek Games",
+        "hero.title": "Smoother games with one click.",
+        "hero.subtitle": "LagKiller optimizes <strong>CPU / I/O / GPU scheduling priorities</strong> for supported games using safe Windows registry keys. Reduce micro-stutter, keep frame-times stable, and focus resources where they matter.",
+        "img.heroAlt": "LagKiller main window",
+
+        "buttons.downloadWin": "⬇ Download for Windows",
+        "buttons.download": "⬇ Download",
+        "buttons.viewGithub": "View on GitHub",
+        "buttons.joinDiscord": "Join Discord KG STUDIO",
+        "buttons.portable": "Portable .zip",
+        "buttons.allReleases": "All releases",
+        "buttons.github": "GitHub",
+        "buttons.discord": "Discord",
+
+        "features.title": "Why LagKiller?",
+        "features.lead": "Built for players who want consistent responsiveness without tweaking the OS by hand.",
+        "features.card1.title": "One-click presets",
+        "features.card1.body": "Toggle High/Medium priorities for CPU, I/O and GPU with clear, safe defaults per game.",
+        "features.card2.title": "Per-game profiles",
+        "features.card2.body": "Choose your game and LagKiller writes the correct <code>Image File Execution Options → PerfOptions</code> values for that EXE.",
+        "features.card3.title": "No snake oil",
+        "features.card3.body": "No services, no kernel hacks, no background miner vibes. Just documented Windows knobs, with easy rollback.",
+
+        "how.title": "How it works (under the hood)",
+        "how.step1": "Pick a game. LagKiller knows its executable name (e.g. <code>Cyberpunk2077.exe</code>).",
+        "how.step2": "Choose presets (CPU / I/O / GPU). We map them to safe DWORD values.",
+        "how.step3": "We write to <code>HKLM\\...\\Image File Execution Options\\&lt;exe&gt;\\PerfOptions</code> (requires admin). Remove with one click.",
+        "how.step4": "Launch your game—Windows scheduler now favors it according to your choices.",
+        "how.shot1": "Screenshot #1 (UI)",
+        "how.shot2": "Screenshot #2 (per-game background)",
+
+        "trust.card1.title": "Signed installer",
+        "trust.card1.body": "We ship a digitally signed installer and binaries. SmartScreen reputation improves over time.",
+        "trust.card3.title": "Easy rollback",
+        "trust.card3.body": "“Reset” removes the registry keys so everything returns to stock in seconds.",
+
+        "download.title": "Download LagKiller",
+        "download.requirements": "Windows 10/11 (x64). Admin rights required only when applying or removing priorities.",
+        "download.verifyTitle": "<strong>Verify the download (optional)</strong>",
+        "download.compare": "Compare the SHA-256 hash:",
+        "download.sha": "SHA256: 0912614F2BBCDFD1D6612E7A9E04936A2B0829C8EF8D0605CF0F8FF0D43F2A5E",
+        "download.signature": "The installer is signed with <em>KG STUDIO</em>. In the file properties → Digital Signatures you should see the valid signature.",
+
+        "games.title": "Supported & popular games",
+        "games.examples": "Examples: The Last of Us Part I/II, Cyberpunk 2077, Horizon Zero Dawn/Forbidden West, God of War (2018/Ragnarök), Red Dead Redemption 2, Hogwarts Legacy, ELDEN RING, Spider-Man Remastered / Miles Morales / Spider-Man 2…",
+        "games.note": "Backgrounds change per game for a nice ambient touch.",
+
+        "faq.title": "FAQ",
+        "faq.q1": "Is this safe? <span>▾</span>",
+        "faq.a1": "Yes. We only write <em>documented</em> registry keys for process scheduling priorities. No services, drivers, or kernel changes. You can remove the keys with a single click (“Reset”).",
+        "faq.q2": "Do I always need admin rights? <span>▾</span>",
+        "faq.a2": "Only to apply or remove settings (HKLM requires elevation). The app itself doesn’t run in the background.",
+        "faq.q3": "Will this boost FPS? <span>▾</span>",
+        "faq.a3": "It primarily improves <em>responsiveness and frame-time stability</em>. FPS gains are possible but not guaranteed—results vary per system and game."
+      },
+      pl: {
+        "nav.features": "Funkcje",
+        "nav.how": "Jak to działa",
+        "nav.download": "Pobierz",
+
+        "hero.kicker": "PRIORITY TOOL by Krystek Games",
+        "hero.title": "Płynniejsze granie jednym kliknięciem.",
+        "hero.subtitle": "LagKiller optymalizuje <strong>priorytety CPU / I/O / GPU</strong> dla obsługiwanych gier, używając bezpiecznych kluczy rejestru Windows. Zmniejsz mikroprzycięcia, utrzymuj stabilny czas klatki i kieruj zasoby tam, gdzie mają znaczenie.",
+        "img.heroAlt": "Główne okno LagKiller",
+
+        "buttons.downloadWin": "⬇ Pobierz dla Windows",
+        "buttons.download": "⬇ Pobierz",
+        "buttons.viewGithub": "Zobacz na GitHubie",
+        "buttons.joinDiscord": "Dołącz do Discorda KG STUDIO",
+        "buttons.portable": "Wersja przenośna .zip",
+        "buttons.allReleases": "Wszystkie wydania",
+        "buttons.github": "GitHub",
+        "buttons.discord": "Discord",
+
+        "features.title": "Dlaczego LagKiller?",
+        "features.lead": "Dla graczy, którzy chcą stałej responsywności bez ręcznego grzebania w systemie.",
+        "features.card1.title": "Presety jednym kliknięciem",
+        "features.card1.body": "Przełączaj priorytety CPU, I/O i GPU (High/Medium) z bezpiecznymi domyślnymi wartościami dla każdej gry.",
+        "features.card2.title": "Profile per gra",
+        "features.card2.body": "Wybierz swoją grę, a LagKiller zapisze właściwe wartości <code>Image File Execution Options → PerfOptions</code> dla danego EXE.",
+        "features.card3.title": "Zero „magii”",
+        "features.card3.body": "Bez usług, bez hacków jądra, bez koparek w tle. Tylko udokumentowane przełączniki Windows i łatwy powrót do ustawień fabrycznych.",
+
+        "how.title": "Jak to działa (pod maską)",
+        "how.step1": "Wybierz grę. LagKiller zna nazwę jej pliku wykonywalnego (np. <code>Cyberpunk2077.exe</code>).",
+        "how.step2": "Dobierz presety (CPU / I/O / GPU). Mapujemy je na bezpieczne wartości DWORD.",
+        "how.step3": "Zapisujemy do <code>HKLM\\...\\Image File Execution Options\\&lt;exe&gt;\\PerfOptions</code> (wymagany admin). Usunięcie jednym kliknięciem.",
+        "how.step4": "Uruchom grę — planer Windows będzie ją faworyzował zgodnie z ustawieniami.",
+        "how.shot1": "Zrzut #1 (UI)",
+        "how.shot2": "Zrzut #2 (tło per gra)",
+
+        "trust.card1.title": "Podpisany instalator",
+        "trust.card1.body": "Dostarczamy cyfrowo podpisany instalator i binaria. Reputacja SmartScreen rośnie z czasem.",
+        "trust.card3.title": "Łatwy reset",
+        "trust.card3.body": "„Reset” usuwa klucze rejestru — powrót do fabryki w kilka sekund.",
+
+        "download.title": "Pobierz LagKiller",
+        "download.requirements": "Windows 10/11 (x64). Uprawnienia admina tylko przy stosowaniu lub usuwaniu priorytetów.",
+        "download.verifyTitle": "<strong>Zweryfikuj pobranie (opcjonalnie)</strong>",
+        "download.compare": "Porównaj sumę SHA-256:",
+        "download.sha": "SHA256: 0912614F2BBCDFD1D6612E7A9E04936A2B0829C8EF8D0605CF0F8FF0D43F2A5E",
+        "download.signature": "Instalator jest podpisany przez <em>KG STUDIO</em>. Właściwości pliku → Podpisy cyfrowe pokażą poprawny podpis.",
+
+        "games.title": "Obsługiwane i popularne gry",
+        "games.examples": "Przykłady: The Last of Us Part I/II, Cyberpunk 2077, Horizon Zero Dawn/Forbidden West, God of War (2018/Ragnarök), Red Dead Redemption 2, Hogwarts Legacy, ELDEN RING, Spider-Man Remastered / Miles Morales / Spider-Man 2…",
+        "games.note": "Tła zmieniają się zależnie od gry dla klimatycznego efektu.",
+
+        "faq.title": "FAQ",
+        "faq.q1": "Czy to jest bezpieczne? <span>▾</span>",
+        "faq.a1": "Tak. Zapisujemy tylko <em>udokumentowane</em> klucze rejestru związane z priorytetami planowania procesów. Bez usług, sterowników czy zmian w jądrze. Klucze możesz usunąć jednym kliknięciem („Reset”).",
+        "faq.q2": "Czy zawsze potrzebne są uprawnienia admina? <span>▾</span>",
+        "faq.a2": "Tylko przy stosowaniu lub usuwaniu ustawień (HKLM wymaga podniesienia uprawnień). Sama aplikacja nie działa w tle.",
+        "faq.q3": "Czy FPS wzrośnie? <span>▾</span>",
+        "faq.a3": "Głównie poprawia <em>responsywność i stabilność czasu klatki</em>. Zyski FPS są możliwe, ale nie gwarantowane — zależą od systemu i gry."
+      }
+    };
+    translations.en = translations.us; // alias
+
+    // i18n
+    function applyTranslations(lang){
+      if (lang === 'en') lang = 'us';
+      document.querySelectorAll("[data-i18n]").forEach(el=>{
+        const key = el.dataset.i18n;
+        const txt = translations[lang] && translations[lang][key];
+        if (txt !== undefined) el.innerHTML = txt;
+      });
+      document.querySelectorAll("[data-i18n-attr]").forEach(el=>{
+        const parts = el.dataset.i18nAttr.split("|");
+        parts.forEach(p=>{
+          const [attr, key] = p.split(":");
+          const val = translations[lang] && translations[lang][key];
+          if (attr && val !== undefined) el.setAttribute(attr, val.replace(/<[^>]*>?/gm,""));
+        });
+      });
+
+      const isWin = navigator.userAgent.includes("Windows");
+      const labelKey = isWin ? "buttons.downloadWin" : "buttons.download";
+      const topBtn = document.getElementById('downloadBtnTop');
+      const dlBtn  = document.getElementById('downloadBtn');
+      if (topBtn) topBtn.innerHTML = translations[lang][labelKey];
+      if (dlBtn)  dlBtn.innerHTML  = isWin ? translations[lang][labelKey].replace(" for Windows"," (Setup)") : translations[lang][labelKey];
+
+      document.querySelectorAll('#year').forEach(s=> s.textContent = new Date().getFullYear());
+    }
+
+    // FAQ accordion
+    document.querySelectorAll('.faq-item').forEach(it=>{
+      it.querySelector('.faq-q').addEventListener('click',()=>it.classList.toggle('open'))
+    });
+
+    // Rok w stopce
+    const y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear();
+
+    // Language dropdown + init
+    (function(){
+      const html = document.documentElement;
+      const dropdown = document.getElementById('langDropdown');
+      const toggle = document.getElementById('langToggle');
+      const items = document.querySelectorAll('#langMenu .lang-item');
+      const currentFlag = document.getElementById('currentFlag');
+      const currentCode = document.getElementById('currentCode');
+
+      const FLAGS = { us:'assets/flags/us.png', pl:'assets/flags/pl.png' };
+
+      function setLang(lang){
+        if (lang === 'en') lang = 'us';
+        html.setAttribute('lang', lang === 'us' ? 'en' : lang); // a11y: lang=en dla English
+        localStorage.setItem('lk_lang', lang);
+        currentFlag.src = FLAGS[lang] || FLAGS.us;
+        currentFlag.alt = lang.toUpperCase();
+        currentCode.textContent = lang.toUpperCase();
+        items.forEach(i=>i.setAttribute('aria-selected', i.dataset.lang===lang ? 'true':'false'));
+        applyTranslations(lang);
+        closeMenu();
+      }
+
+      function openMenu(){ dropdown.classList.add('open'); toggle.setAttribute('aria-expanded','true'); }
+      function closeMenu(){ dropdown.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); }
+
+      if (toggle) {
+        toggle.addEventListener('click', (e)=>{ e.stopPropagation(); dropdown.classList.contains('open') ? closeMenu() : openMenu(); });
+      }
+      items.forEach(i=>{ i.addEventListener('click', (e)=>{ e.stopPropagation(); setLang(i.dataset.lang); }); });
+      document.addEventListener('click', ()=> closeMenu());
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeMenu(); });
+
+      const savedRaw = localStorage.getItem('lk_lang') || 'us';
+      const saved = (savedRaw === 'en') ? 'us' : savedRaw;
+      setLang(saved);
+    })();
+  </script>
+</body>
+</html>
